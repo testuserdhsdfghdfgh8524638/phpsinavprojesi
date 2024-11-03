@@ -1,57 +1,41 @@
 <?php
-include "baglan.php";
+include "baglan.php"; // Veritabanı bağlantısını sağlamak için baglan.php dosyasını dahil et
 
 echo "<pre>";
-print_r($_POST);
+print_r($_POST); // POST ile gelen verileri yazdır
 echo "</pre>";
 
+// Eğer gerekli POST değişkenleri tanımlıysa
 if (isset(
-    $_POST['ayar_baslik'],
-    $_POST['ayar_aciklama'],
-    $_POST['ayar_anahtarkelime'],
-    $_POST['ayar_facebook'],
-    $_POST['ayar_x'],
-    $_POST['ayar_instagram'],
-    $_POST['ayar_youtube'],
-    $_POST['ayar_msunucu'],
-    $_POST['ayar_mport'],
-    $_POST['ayar_madres'],
-    $_POST['ayar_msifre']
+    $_POST['property1'], // Bu alanın varlığı kontrol ediliyor
+    $_POST['property2']  // Bu alanın varlığı kontrol ediliyor
 )) {
+    // Veritabanında güncelleme yapmak için SQL sorgusu oluştur
     $SQL = "UPDATE ayar SET
-ayar_baslik=:ayar_baslik,
-ayar_aciklama=:ayar_aciklama,
-ayar_anahtarkelime=:ayar_anahtarkelime,
-ayar_facebook=:ayar_facebook,
-ayar_x=:ayar_x,
-ayar_instagram=:ayar_instagram,
-ayar_youtube=:ayar_youtube,
-ayar_msunucu=:ayar_msunucu,
-ayar_mport=:ayar_mport,
-ayar_madres=:ayar_madres";
+    property1=:property1, // property1 alanı güncelleniyor
+    property2=:property2"; // property2 alanı güncelleniyor
 
+    // Güncelleme için gerekli değerleri içeren dizi oluştur
     $SQL_array = array(
-        'ayar_baslik' => $_POST['ayar_baslik'],
-        'ayar_aciklama' => $_POST['ayar_aciklama'],
-        'ayar_anahtarkelime' => $_POST['ayar_anahtarkelime'],
-        'ayar_facebook' => $_POST['ayar_facebook'],
-        'ayar_x' => $_POST['ayar_x'],
-        'ayar_instagram' => $_POST['ayar_instagram'],
-        'ayar_youtube' => $_POST['ayar_youtube'],
-        'ayar_msunucu' => $_POST['ayar_msunucu'],
-        'ayar_mport' => $_POST['ayar_mport'],
-        'ayar_madres' => $_POST['ayar_madres']
+        'property1' => $_POST['property1'], // POST'dan gelen property1 değeri alınıyor
+        'property2' => $_POST['property2']  // POST'dan gelen property2 değeri alınıyor
     );
 
+    // Eğer şifre alanı boş değilse güncellemeye ekle
     if ($_POST['ayar_msifre'] != "") {
-        $SQL .= ",ayar_msifre=:ayar_msifre";
-        $SQL_array['ayar_msifre'] = $_POST['ayar_msifre'];
+        $SQL .= ",ayar_msifre=:ayar_msifre"; // SQL sorgusuna şifre alanı ekleniyor
+        $SQL_array['ayar_msifre'] = $_POST['ayar_msifre']; // Şifre değeri diziye ekleniyor
     }
-    $SQL .= " WHERE ayar_id=1";
+    $SQL .= " WHERE ayar_id=1"; // Güncellenecek kaydın koşulu belirtiliyor
 
+    // SQL sorgusunu hazırlama
     $sorgu = $db->prepare($SQL);
+    // Sorguyu çalıştır ve sonucu al
     $sonuc = $sorgu->execute($SQL_array);
 
-    //print_r($sorgu->errorInfo());
+    //print_r($sorgu->errorInfo()); // Eğer hata varsa hata bilgisini yazdır
 }
+
+// İşlem sonucuna göre ayar sayfasına yönlendir
 header("Location:ayar.php?sonuc=" . $sonuc);
+?>
